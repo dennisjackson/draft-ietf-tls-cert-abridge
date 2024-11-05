@@ -79,7 +79,8 @@ class ZstdWrapper:
         # TODO Not Implemented
         return b""
 
-def zstandard_train_dict(samples, target_size,offline_compression):
+
+def zstandard_train_dict(samples, target_size, offline_compression):
     logging.info(
         f"Training a zstd dictionary of {target_size} bytes over {len(samples)} samples"
     )
@@ -93,6 +94,7 @@ def zstandard_train_dict(samples, target_size,offline_compression):
         steps=ZSTD_TRAINING_STEPS,
     )
 
+
 class BrotliWrapper:
     def __init__(self):
         pass
@@ -104,9 +106,8 @@ class BrotliWrapper:
         return self.compress_bytes(b"".join(cert_chain))
 
     def compress_bytes(self, raw_bytes):
-        return brotli.compress(raw_bytes,quality=11,lgwin=17)
+        return brotli.compress(raw_bytes, quality=11, lgwin=17)
 
     def decompress(self, compressed_data):
         # TODO Not Implemented
         return b""
-
