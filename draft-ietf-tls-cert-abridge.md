@@ -222,27 +222,23 @@ The second pass uses Brotli {{BROTLI}} to compress any redundant data in the end
  * `quality=5`
  * `lgwindow=17`
 
-Benchmarks on real world certificate chains suggest that in this context higher values require greater CPU usage but do not result in better compression,
+Benchmarks on real world certificate chains suggest that higher values require greater CPU usage but do not result in better compression.
 
-# Preliminary Evaluation {#eval}
+# Evaluation {#eval}
 
 [[**NOTE:** This section to be removed prior to publication.]]
 
-The storage footprint refers to the on-disk size required for the end-entity dictionary. The other columns report the 5th, 50th and 95th percentile of the resulting certificate chains. The evaluation set was a ~75,000 certificate chains from the Tranco list using the python scripts in the draft's Github repository.
+The columns report the 5th, 50th and 95th percentile of the resulting certificate chains wire sizes in bytes. The evaluation set was ~75000 certificate chains from the Tranco list using the python scripts in the draft's Github repository.
 
-| Scheme                                               |   Storage Footprint |   p5 |   p50 |   p95 |
-|------------------------------------------------------|---------------------|------|-------|-------|
-| Original                                             |                   0 | 2308 |  4032 |  5609 |
-| TLS Cert Compression                                 |                   0 | 1619 |  3243 |  3821 |
-| Intermediate Suppression and TLS Cert Compression    |                   0 | 1020 |  1445 |  3303 |
-| **This Draft**                                       |               65336 |  661 |  1060 |  1437 |
-| **This Draft with opaque trained dictionary**        |                3000 |  562 |   931 |  1454 |
-| Hypothetical Optimal Compression                     |                   0 |  377 |   742 |  1075 |
+| Scheme                                               |   p5 |   p50 |   p95 |
+|------------------------------------------------------|------|-------|-------|
+| Original / Uncompressed                              | 2308 |  4032 |  5609 |
+| Existing TLS Certificate Compression                 | 1619 |  3243 |  3821 |
+| **This Draft**                                       |  881 |  1256 |  1716 |
+| Hypothetical Optimal Compression                     |  377 |   742 |  1075 |
 
  * 'Original' refers to the sampled certificate chains without any compression.
  * 'TLS Cert Compression' used ZStandard with the parameters configured for maximum compression as defined in {{TLSCertCompress}}.
- * 'Intermediate Suppression and TLS Cert Compression' was modelled as the elimination of all certificates in the intermediate and root certificates with the Basic Constraints CA value set to true. If a cert chain included an unrecognized certificate with CA status, then no CA certificates were removed from that chain. The cert chain was then passed to 'TLS Cert Compression' as a second pass.
- * 'This Draft with opaque trained dictionary' refers to pass 1 and pass 2 as defined by this draft, but instead using a 3000 byte dictionary for pass 2 which was produced by the Zstandard dictionary training algorithm. This illustrates a ceiling on what ought to be possible by improving the construction of the pass 2 dictionary in this document. However, using this trained dictionary directly will not treat all CA's equitably, as the dictionary will be biased towards compressing the most popular CAs more effectively.
  * 'Hypothetical Optimal Compression' is the resulting size of the cert chain after reducing it to only the public key in the end-entity certificate, the CA signature over the EE cert, the embedded SCT signatures and a compressed list of domains in the SAN extension. This represents the best possible compression as it entirely removes any CA certs, identifiers, field tags and lengths and non-critical extensions such as OCSP, CRL and policy extensions.
 
 # Deployment Considerations {#deployment}
