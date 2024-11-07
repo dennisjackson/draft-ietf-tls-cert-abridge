@@ -264,7 +264,7 @@ A more detailed analysis and discussion of CA certificate lifetimes and root sto
 
 ## Version Migration
 
-As new versions of this scheme are specified, clients and servers would benefit from migrating to the latest version. Whilst servers using CA certificates outside the scheme's listing can still offer this compression scheme and partially benefit from it, migrating to the latest version ensures that new CAs can compete on a level playing field with existing CAs. It is possible for a client or server to offer multiple versions of this scheme without having to pay twice the storage cost, since the majority of the stored data is in the pass 1 certificate listing and the majority of certificates will be in both versions and so need only be stored once.
+As new versions of this scheme are specified, clients and servers would benefit from migrating to the latest version. Whilst servers using CA certificates outside the scheme's listing can still offer this compression scheme and partially benefit from it, migrating to the latest version ensures that new CAs can compete on a level playing field with existing CAs. It is possible for a client or server to offer multiple versions of this scheme without having to pay twice the storage cost, since most certificates will be in both versions and so need only be stored once.
 
 Clients and servers SHOULD offer the latest version of this scheme and MAY offer one or more historical versions. Although clients and servers which fall out of date will no longer benefit from the scheme, they will not suffer any other penalties or incompatibilities. Future schemes will likely establish recommended lifetimes for sunsetting a previous version and adopting a new one.
 
@@ -272,7 +272,7 @@ As the majority of clients deploying this scheme are likely to be web browsers w
 
 ## Disk Space Requirements
 
-Clients and servers implementing this scheme need to store a listing of root and intermediate certificates for pass 1, which currently occupies around ~3 MB and a smaller dictionary on the order of ~100 KB for pass 2. Clients and servers offering multiple versions of this scheme do not need to duplicate the pass 1 listing, as multiple versions can refer to same string.
+Clients and servers implementing this scheme need to store a listing of root and intermediate certificates for pass 1 which currently occupies around ~3 MB. Clients and servers offering multiple versions of this scheme do not need to duplicate the pass 1 listing, as multiple versions can refer to same string.
 
 As popular web browsers already ship a complete list of trusted intermediate and root certificates, their additional storage requirements are minimal. Servers offering this scheme are intended to be 'full-fat' web servers and so typically have plentiful storage already. This draft is not intended for use in storage-constrained IoT devices, but alternative versions with stripped down listings may be suitable.
 
@@ -323,7 +323,7 @@ Typically around 100 to 200 new WebPKI intermediate certificates are issued each
 
 This draft is currently written with a view to being adopted as a particular TLS Certificate Compression Scheme. However, this means that each dictionary used in the wild must have an assigned code point. A new dictionary would likely need to be issued no more than yearly. However, negotiating the dictionary used would avoid the overhead of minting a new draft and code point. A sketch for how dictionary negotiation might work is below.
 
-This draft would instead define a new extension, which would define TLS Certificate Compression with Preshared Dictionaries. Dictionaries would be identified by an IANA-assigned identifier of two bytes, with a further two bytes for the major version and two more for the minor version. Adding new certificates to a dictionary listing would require a minor version bump. Removing certificates or changing the pass 2 dictionary would require a major version bump.
+This draft would instead define a new extension, which would define TLS Certificate Compression with Preshared Dictionaries. Dictionaries would be identified by an IANA-assigned identifier of two bytes, with a further two bytes for the major version and two more for the minor version. Adding new certificates to a dictionary listing would require a minor version bump. Removing certificates would require a major version bump.
 
 ~~~
 struct {
