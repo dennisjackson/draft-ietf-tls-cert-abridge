@@ -13,14 +13,11 @@ As the scheme removes the overhead of including root and intermediate certificat
 
 ## Preliminary Evaluation
 
-This draft is a work in progress, however a preliminary evaluation is available:
-
 | Scheme                                               |   p5 |   p50 |   p95 |
 |------------------------------------------------------|------|-------|-------|
-| Original                                             | 2308 |  4032 |  5609 |
-| TLS Cert Compression                                 | 1619 |  3243 |  3821 |
-| Intermediate Suppression and TLS Cert Compression    | 1020 |  1445 |  3303 |
-| **This Draft**                                       |  661 |  1060 |  1437 |
+| Original / Uncompressed                              | 2308 |  4032 |  5609 |
+| Existing TLS Certificate Compression                 | 1619 |  3243 |  3821 |
+| **This Draft**                                       |  881 |  1256 |  1716 |
 | Hypothetical Optimal Compression                     |  377 |   742 |  1075 |
 
 A complete table of results and benchmarking scripts can be found in [benchmarks](benchmarks/).
