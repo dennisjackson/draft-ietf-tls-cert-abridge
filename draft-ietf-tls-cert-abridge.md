@@ -290,7 +290,7 @@ In TLS1.3, the extension carrying the client's supported TLS Certificate Compres
 
 # IANA Considerations
 
-[[**TODO:** Adopt an identifier for experimental purposes.]]
+This draft uses the TLS Certificate Compression Algorithm ID 43776 (0xab00) which is available under the Experimental Use policy and does not require any IANA actions.
 
 --- back
 
