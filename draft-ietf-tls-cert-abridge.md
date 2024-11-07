@@ -263,7 +263,7 @@ As the majority of clients deploying this scheme are likely to be web browsers w
 
 Clients and servers implementing this scheme need to store a listing of root and intermediate certificates for pass 1, which currently occupies around ~3 MB and a smaller dictionary on the order of ~100 KB for pass 2. Clients and servers offering multiple versions of this scheme do not need to duplicate the pass 1 listing, as multiple versions can refer to same string.
 
-As popular web browsers already ship a complete list of trusted intermediate and root certificates, their additional storage requirements are minimal. Servers offering this scheme are intended to be 'full-fat' web servers and so typically have plentiful storage already. This draft is not intended for use in storage-constrained IoT devices, but alternative versions with stripped down listings may be suitable.
+As popular web browsers already ship a complete list of trusted intermediate and root certificates, their additional storage requirements are minimal. Servers offering this scheme for their own certificate chain do not need to store the list of pass 1 root and intermediate certificates at all. Instead, they can store the hash of each certificate in the dictionary and its associated identifier, which reduces their storage footprint to ~60 KB. It is also permissible for servers only performing compression to only store a subset of the full pass 1 dictionary, as it is not an error for a server to choose not to compress a particular entry.
 
 ## Implementation Complexity
 
