@@ -9,17 +9,17 @@
 <meta content="
        This draft defines a new TLS Certificate Compression scheme which uses a shared dictionary of root and intermediate WebPKI certificates. The scheme smooths the transition to post-quantum certificates by eliminating the root and intermediate certificates from the TLS certificate chain without impacting trust negotiation. It also delivers better compression than alternative proposals whilst ensuring fair treatment for both CAs and website operators. It may also be useful in other applications which store certificate chains, e.g. Certificate Transparency logs. 
     " name="description">
-<meta content="xml2rfc 3.23.0" name="generator">
+<meta content="xml2rfc 3.24.0" name="generator">
 <meta content="draft-ietf-tls-cert-abridge-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.23.0
-    Python 3.12.3
+  xml2rfc 3.24.0
+    Python 3.12.7
     ConfigArgParse 1.7
-    google-i18n-address 3.1.0
+    google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.4
-    lxml 4.9.4
-    platformdirs 4.2.2
+    lxml 5.3.0
+    platformdirs 4.3.6
     pycountry 22.3.5
     PyYAML 6.0.1
     requests 2.32.3
@@ -160,31 +160,6 @@
 }
 
 @font-face {
-  font-family: 'Cabin Condensed';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-vietnamese.woff2') format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
-}
-@font-face {
-  font-family: 'Cabin Condensed';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: 'Cabin Condensed';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-@font-face {
   font-family: 'Oxygen Mono';
   font-style: normal;
   font-weight: 400;
@@ -201,6 +176,77 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
   color-scheme: light dark;
   --background-color: #fff;
@@ -213,6 +259,7 @@
   --pilcrow-strong: #bbb;
   --small-font-size: 14.5px;
   --font-mono: 'Oxygen Mono', monospace;
+  --font-title: "Sofia Sans Semi Condensed", sans-serif;
   scrollbar-color: #bbb #eee;
 }
 body {
@@ -231,8 +278,8 @@ body {
 
 /* headings */
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Cabin Condensed", sans-serif;
-  font-weight: 600;
+  font-family: var(--font-title);
+  font-weight: 680;
   margin: 0.8em 0 0.3em;
   font-size-adjust: 0.5;
   color: var(--title-color);
@@ -640,6 +687,12 @@ sub, sup {
   padding: 0.75em 0 2em 0;
   margin-bottom: 1em;
 }
+@media screen {
+  #toc nav {
+    font-family: var(--font-title);
+    font-weight: 360;
+  }
+}
 #toc nav ul {
   margin: 0 0.5em 0 0;
   padding: 0;
@@ -1023,11 +1076,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Abridged Certs</td>
-<td class="right">September 2024</td>
+<td class="right">November 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Jackson</td>
-<td class="center">Expires 20 March 2025</td>
+<td class="center">Expires 11 May 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1040,12 +1093,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-tls-cert-abridge-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-09-16" class="published">16 September 2024</time>
+<time datetime="2024-11-07" class="published">7 November 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-03-20">20 March 2025</time></dd>
+<dd class="expires"><time datetime="2025-05-11">11 May 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1095,7 +1148,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 20 March 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 11 May 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1136,9 +1189,6 @@ svg :is([fill="white"], [fill^="#fff"]) {
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.3">
                 <p id="section-toc.1-1.1.2.3.1" class="keepWithNext"><a href="#section-1.3" class="auto internal xref">1.3</a>.  <a href="#name-relationship-to-other-draft" class="internal xref">Relationship to other drafts</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.4">
-                <p id="section-toc.1-1.1.2.4.1"><a href="#section-1.4" class="auto internal xref">1.4</a>.  <a href="#name-status" class="internal xref">Status</a></p>
-</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
@@ -1160,16 +1210,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
                 <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-pass-2-end-entity-compressi" class="internal xref">Pass 2: End-Entity Compression</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.1">
-                    <p id="section-toc.1-1.3.2.2.2.1.1"><a href="#section-3.2.1" class="auto internal xref">3.2.1</a>.  <a href="#name-construction-of-shared-dict" class="internal xref">Construction of Shared Dictionary</a></p>
-</li>
-                </ul>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-preliminary-evaluation" class="internal xref">Preliminary Evaluation</a></p>
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-evaluation" class="internal xref">Evaluation</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-deployment-considerations" class="internal xref">Deployment Considerations</a></p>
@@ -1267,14 +1312,6 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <p id="section-1.3-6">Handling long certificate chains in TLS-Based EAP Methods <span>[<a href="#RFC9191" class="cite xref">RFC9191</a>]</span> discusses the challenges of long certificate chains outside the WebPKI ecosystem. Although the scheme proposed in this draft is targeted at WebPKI use, defining alternative shared dictionaries for other major ecosystems may be of interest.<a href="#section-1.3-6" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="status">
-<section id="section-1.4">
-        <h3 id="name-status">
-<a href="#section-1.4" class="section-number selfRef">1.4. </a><a href="#name-status" class="section-name selfRef">Status</a>
-        </h3>
-<p id="section-1.4-1">This draft is still at an early stage. Open questions are marked with the tag <strong>DISCUSS</strong>.<a href="#section-1.4-1" class="pilcrow">¶</a></p>
-</section>
-</div>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1295,13 +1332,10 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-abridged-compression-scheme" class="section-name selfRef">Abridged Compression Scheme</a>
       </h2>
 <p id="section-3-1">This section describes a compression scheme suitable for compressing certificate chains used in TLS. The scheme is defined in two parts. An initial pass compressing known intermediate and root certificates and then a subsequent pass compressing the end-entity certificate.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">The compression scheme in this draft has two parameters listed below which influence the construction of the static dictionary. Future versions of this draft would use different parameters and so construct different dictionaries which would be registered under different TLS Certificate Compression code points. This is discussed further in <a href="#deployment" class="auto internal xref">Section 5</a>.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-2">The compression scheme in this draft has one parameter listed below which influence the construction of the static dictionary. Future versions of this draft would use different parameters and so construct different dictionaries which would be registered under different TLS Certificate Compression code points. This is discussed further in <a href="#deployment" class="auto internal xref">Section 5</a>.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3-3.1">
           <p id="section-3-3.1.1"><code>CCADB_SNAPSHOT_TIME</code> - <code>2023-01-01 00:00:00Z</code><a href="#section-3-3.1.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-3-3.2">
-          <p id="section-3-3.2.1"><code>CT_CERT_WINDOW</code> - <code>2022-12-01 00:00:00Z</code> to <code>2023-01-01 00:00:00Z</code><a href="#section-3-3.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <div id="pass-1-intermediate-and-root-compression">
@@ -1345,8 +1379,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
               <p id="section-3.1.1-5.8.1">Associate each element of the list with the concatenation of the constant <code>0xff</code> and its index in the list represented as a <code>uint16</code>.<a href="#section-3.1.1-5.8.1" class="pilcrow">¶</a></p>
 </li>
           </ol>
-<p id="section-3.1.1-6">[[<strong>DISCUSS:</strong> The four programs were selected because they represent certificate consumers in the CCADB. Are there any other root programs which ought to be included? The only drawback is a larger disk requirement, since this compression scheme does not impact trust decisions.]]<a href="#section-3.1.1-6" class="pilcrow">¶</a></p>
-<p id="section-3.1.1-7">[[<strong>TODO:</strong> Ask CCADB to provide an authoritative copy of this listing. A subset of these lists is available in <code>benchmarks/data</code> in this draft's repository.]]<a href="#section-3.1.1-7" class="pilcrow">¶</a></p>
+<p id="section-3.1.1-6">[[<strong>TODO:</strong> Ask CCADB to provide an authoritative copy of this listing. A subset of these lists is available in <code>benchmarks/data</code> in this draft's repository.]]<a href="#section-3.1.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="compression-of-ca-certificates-in-certificate-chain">
@@ -1383,9 +1416,9 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 </li>
           </ol>
 <p id="section-3.1.2-4">The resulting output should be a well-formatted <code>Certificate</code> message payload with the recognized intermediate and root certificates replaced with three byte identifiers and resulting lengths corrected. Note that the <code>extensions</code> field in each <code>CertificateEntry</code> remains unchanged, as does the <code>certificate_request_context</code> and any unrecognized certificates.<a href="#section-3.1.2-4" class="pilcrow">¶</a></p>
-<p id="section-3.1.2-5">The decompression algorithm requires the above steps but in reverse, swapping any recognized three-byte identifier in a <code>cert_data</code> field with the DER representation of the associated certificate and updating the lengths. Unrecognized three-byte identifiers are ignored. Note that this does not have security implications, as the peer could send a Certificate message with an arbitrary payload directly.
-If the compressed certificate chain cannot be parsed (e.g. due to incorrect length fields) the decompression algorithm <span class="bcp14">MUST</span> report the failure and as required by <span>[<a href="#TLSCertCompress" class="cite xref">TLSCertCompress</a>]</span>, the connection <span class="bcp14">MUST</span> be terminated with the "bad_certificate" alert.<a href="#section-3.1.2-5" class="pilcrow">¶</a></p>
-<p id="section-3.1.2-6">TLS implementations intending to only use this scheme as a compressor (e.g. servers) <span class="bcp14">SHOULD</span> minimize the storage requirements of pass 1 by using a lookup table which maps the cryptographic hash of each certificate in the pass 1 listing to its assigned three byte identifier. This avoids the need for the compressor to retain a full copy of the pass 1 list. The hashing algorithm used in this lookup table is internal to the implementation and not exposed, but <span class="bcp14">MUST</span> be cryptographically secure. Note that implementations using this scheme as a decompressor (e.g. clients) typically already ship with a listing of trusted root and intermediate certificates which can be reused by the decompressor without any additional storage overhead.<a href="#section-3.1.2-6" class="pilcrow">¶</a></p>
+<p id="section-3.1.2-5">The decompression algorithm requires the above steps but in reverse, swapping any recognized three-byte identifier in a <code>cert_data</code> field with the DER representation of the associated certificate and updating the lengths.<a href="#section-3.1.2-5" class="pilcrow">¶</a></p>
+<p id="section-3.1.2-6">If the compressed certificate chain cannot be parsed (e.g. due to incorrect length fields) the decompression algorithm <span class="bcp14">MUST</span> report the failure to the TLS library. Any unrecognized three-byte identifiers encountered during decompression <span class="bcp14">MUST</span> also be treated as decompression failures. As required by <span>[<a href="#TLSCertCompress" class="cite xref">TLSCertCompress</a>]</span>, decompression failures mean that the connection <span class="bcp14">MUST</span> be terminated with the "bad_certificate" alert.<a href="#section-3.1.2-6" class="pilcrow">¶</a></p>
+<p id="section-3.1.2-7">TLS implementations intending to only use this scheme as a compressor (e.g. servers) <span class="bcp14">SHOULD</span> minimize the storage requirements of pass 1 by using a lookup table which maps the cryptographic hash of each certificate in the pass 1 listing to its assigned three byte identifier. This avoids the need for the compressor to retain a full copy of the pass 1 list. The hashing algorithm used in this lookup table is internal to the implementation and not exposed, but <span class="bcp14">MUST</span> be cryptographically secure. Note that implementations using this scheme as a decompressor (e.g. clients) typically already ship with a listing of trusted root and intermediate certificates which can be reused by the decompressor without any additional storage overhead.<a href="#section-3.1.2-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1395,96 +1428,32 @@ If the compressed certificate chain cannot be parsed (e.g. due to incorrect leng
         <h3 id="name-pass-2-end-entity-compressi">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-pass-2-end-entity-compressi" class="section-name selfRef">Pass 2: End-Entity Compression</a>
         </h3>
-<p id="section-3.2-1">This section describes a pass based on Zstandard <span>[<a href="#ZSTD" class="cite xref">ZSTD</a>]</span> with application-specified dictionaries. The dictionary is constructed with reference to the list of intermediate and root certificates discussed earlier in <a href="#listing" class="auto internal xref">Section 3.1.1</a>, as well as several external sources of information.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2">[[<strong>DISCUSS:</strong> This draft is unopinionated about the underlying compression scheme is used as long as it supports application specified dictionaries. Is there an argument for using a different scheme?]]<a href="#section-3.2-2" class="pilcrow">¶</a></p>
-<div id="construction-of-shared-dictionary">
-<section id="section-3.2.1">
-          <h4 id="name-construction-of-shared-dict">
-<a href="#section-3.2.1" class="section-number selfRef">3.2.1. </a><a href="#name-construction-of-shared-dict" class="section-name selfRef">Construction of Shared Dictionary</a>
-          </h4>
-<p id="section-3.2.1-1">[[<strong>DISCUSS / TODO:</strong> This section remains a work in progress and needs refinement. The goal is to produce a dictionary of minimal size which provides maximum compression whilst treating every CA equitably. Currently this dictionary occupies ~65KB of space, is equitable and has performance within a ~100 bytes of the best known alternative. This is discussed further in <a href="#eval" class="auto internal xref">Section 4</a>.]]<a href="#section-3.2.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.2.1-2">The dictionary is built by systematic combination of the common strings used in certificates by each issuer in the known list described in <a href="#listing" class="auto internal xref">Section 3.1.1</a>. This dictionary is constructed in three stages, with the output of each stage being concatenated with the next. Implementations of this scheme need only consume the finished dictionary and do not need to construct it themselves.<a href="#section-3.2.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">The second pass uses Brotli <span>[<a href="#BROTLI" class="cite xref">BROTLI</a>]</span> to compress any redundant data in the end-entity certificate. Benchmarks on existing certificate chains suggest that the compression ratio is relatively insensitive to the compressor's parameters.  It is <span class="bcp14">RECOMMENDED</span> that the compressor (i.e. the server) use the following parameters:<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3.2.1-3.1">
-              <p id="section-3.2.1-3.1.1">Firstly, for each intermediate certificate enumerated in the listing in <a href="#listing" class="auto internal xref">Section 3.1.1</a>., extract the issuer field (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.1.2.4" class="relref">Section 4.1.2.4</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>) and derive the matching authority key identifier (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.1" class="relref">Section 4.2.1.1</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>) for the certificate. Order them according to the listing in <a href="#listing" class="auto internal xref">Section 3.1.1</a>, then copy them to the output.<a href="#section-3.2.1-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-3.2-2.1">
+            <p id="section-3.2-2.1.1"><code>quality=5</code><a href="#section-3.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-3.2.1-3.2">
-              <p id="section-3.2.1-3.2.1">Secondly, take the listing of certificate transparency logs trusted by the root programs selected in <a href="#listing" class="auto internal xref">Section 3.1.1</a>, which are located at<span>[<a href="#AppleCTLogs" class="cite xref">AppleCTLogs</a>]</span> <span>[<a href="#GoogleCTLogs" class="cite xref">GoogleCTLogs</a>]</span> as of <code>CCADB_SNAPSHOT_TIME</code> and extract the list of log identifiers. Remove duplicates and order them lexicographically, then copy them to the output.<a href="#section-3.2.1-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-3.2-2.2">
+            <p id="section-3.2-2.2.1"><code>lgwindow=17</code><a href="#section-3.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-3.2.1-3.3">
-              <p id="section-3.2.1-3.3.1">Finally, enumerate all certificates contained within certificate transparency logs above and witnessed during <code>CT_CERT_WINDOW</code>. For each issuer in the listing in <a href="#listing" class="auto internal xref">Section 3.1.1</a>, select the first end-entity certificate when ordered by the log id (lexicographically) and latest witnessed date.<a href="#section-3.2.1-3.3.1" class="pilcrow">¶</a></p>
-<p id="section-3.2.1-3.3.2">
-Extract the contents of the following extensions from the end-entity certificate selected for each issuer:<a href="#section-3.2.1-3.3.2" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-3.2.1-3.3.3.1">
-                  <p id="section-3.2.1-3.3.3.1.1">Authority Information Access (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.2.1" class="relref">Section 4.2.2.1</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>)<a href="#section-3.2.1-3.3.3.1.1" class="pilcrow">¶</a></p>
-</li>
-                <li class="normal" id="section-3.2.1-3.3.3.2">
-                  <p id="section-3.2.1-3.3.3.2.1">Certificate Policies  (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.4" class="relref">Section 4.2.1.4</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>)<a href="#section-3.2.1-3.3.3.2.1" class="pilcrow">¶</a></p>
-</li>
-                <li class="normal" id="section-3.2.1-3.3.3.3">
-                  <p id="section-3.2.1-3.3.3.3.1">CRL Distribution Points (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.13" class="relref">Section 4.2.1.13</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>)<a href="#section-3.2.1-3.3.3.3.1" class="pilcrow">¶</a></p>
-</li>
-                <li class="normal" id="section-3.2.1-3.3.3.4">
-                  <p id="section-3.2.1-3.3.3.4.1">Freshest CRL (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.15" class="relref">Section 4.2.1.15</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>)<a href="#section-3.2.1-3.3.3.4.1" class="pilcrow">¶</a></p>
-</li>
-              </ul>
-<p id="section-3.2.1-3.3.4">
-Concatenate the byte representation of each extension (including extension id and length) and copy it to the output. If no end-entity certificate can be found for an issuer with this process, omit the entry for that issuer.<a href="#section-3.2.1-3.3.4" class="pilcrow">¶</a></p>
-</li>
-          </ul>
-<p id="section-3.2.1-4">[[<strong>DISCUSS:</strong> This last step is picking a single certificate issued by each issuer as a canonical reference to use for compression. The ordering chosen allows the dictionary builder to stop traversing CT as soon as they've found an entry for each issuer. It would be much more efficient to just ask CAs to submit this information to the CCADB directly.]]<a href="#section-3.2.1-4" class="pilcrow">¶</a></p>
-<div id="compression-of-end-entity-certificates-in-certificate-chain">
-<section id="section-3.2.1.1">
-            <h5 id="name-compression-of-end-entity-c">
-<a href="#section-3.2.1.1" class="section-number selfRef">3.2.1.1. </a><a href="#name-compression-of-end-entity-c" class="section-name selfRef">Compression of End-Entity Certificates in Certificate Chain</a>
-            </h5>
-<p id="section-3.2.1.1-1">The resulting bytes from Pass 1 are passed to ZStandard <span>[<a href="#ZSTD" class="cite xref">ZSTD</a>]</span> with the dictionary specified in the previous section. It is <span class="bcp14">RECOMMENDED</span> that the compressor (i.e. the server) use the following parameters:<a href="#section-3.2.1.1-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-3.2.1.1-2.1">
-                <p id="section-3.2.1.1-2.1.1"><code>chain_log=30</code><a href="#section-3.2.1.1-2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-3.2.1.1-2.2">
-                <p id="section-3.2.1.1-2.2.1"><code>search_log=30</code><a href="#section-3.2.1.1-2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-3.2.1.1-2.3">
-                <p id="section-3.2.1.1-2.3.1"><code>hash_log=30</code><a href="#section-3.2.1.1-2.3.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-3.2.1.1-2.4">
-                <p id="section-3.2.1.1-2.4.1"><code>target_length=6000</code><a href="#section-3.2.1.1-2.4.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-3.2.1.1-2.5">
-                <p id="section-3.2.1.1-2.5.1"><code>threads=1</code><a href="#section-3.2.1.1-2.5.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-3.2.1.1-2.6">
-                <p id="section-3.2.1.1-2.6.1"><code>compression_level=22</code><a href="#section-3.2.1.1-2.6.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-3.2.1.1-2.7">
-                <p id="section-3.2.1.1-2.7.1"><code>force_max_window=1</code><a href="#section-3.2.1.1-2.7.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-<p id="section-3.2.1.1-3">These parameters are recommended in order to achieve the best compression ratio however implementations <span class="bcp14">MAY</span> use their preferred parameters as long as the resulting output can be decompressed by a <span>[<a href="#ZSTD" class="cite xref">ZSTD</a>]</span>-compliant implementation. With TLS Certificate Compression, the server needs to only perform a single compression at startup and cache the result, so optimizing for maximal compression is recommended. The client's decompression speed is insensitive to these parameters.<a href="#section-3.2.1.1-3" class="pilcrow">¶</a></p>
-</section>
-</div>
-</section>
-</div>
+        </ul>
+<p id="section-3.2-3">Benchmarks on real world certificate chains suggest that higher values require greater CPU usage but do not result in better compression.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="eval">
 <section id="section-4">
-      <h2 id="name-preliminary-evaluation">
-<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-preliminary-evaluation" class="section-name selfRef">Preliminary Evaluation</a>
+      <h2 id="name-evaluation">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-evaluation" class="section-name selfRef">Evaluation</a>
       </h2>
 <p id="section-4-1">[[<strong>NOTE:</strong> This section to be removed prior to publication.]]<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2">The storage footprint refers to the on-disk size required for the end-entity dictionary. The other columns report the 5th, 50th and 95th percentile of the resulting certificate chains. The evaluation set was a ~75,000 certificate chains from the Tranco list using the python scripts in the draft's Github repository.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-2">The columns report the 5th, 50th and 95th percentile of the resulting certificate chains wire sizes in bytes. The evaluation set was ~75000 certificate chains from the Tranco list using the python scripts in the draft's Github repository.<a href="#section-4-2" class="pilcrow">¶</a></p>
 <table class="center" id="table-1">
         <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
 <thead>
           <tr>
             <th class="text-left" rowspan="1" colspan="1">Scheme</th>
-            <th class="text-left" rowspan="1" colspan="1">Storage Footprint</th>
             <th class="text-left" rowspan="1" colspan="1">p5</th>
             <th class="text-left" rowspan="1" colspan="1">p50</th>
             <th class="text-left" rowspan="1" colspan="1">p95</th>
@@ -1492,47 +1461,27 @@ Concatenate the byte representation of each extension (including extension id an
         </thead>
         <tbody>
           <tr>
-            <td class="text-left" rowspan="1" colspan="1">Original</td>
-            <td class="text-left" rowspan="1" colspan="1">0</td>
+            <td class="text-left" rowspan="1" colspan="1">Original / Uncompressed</td>
             <td class="text-left" rowspan="1" colspan="1">2308</td>
             <td class="text-left" rowspan="1" colspan="1">4032</td>
             <td class="text-left" rowspan="1" colspan="1">5609</td>
           </tr>
           <tr>
-            <td class="text-left" rowspan="1" colspan="1">TLS Cert Compression</td>
-            <td class="text-left" rowspan="1" colspan="1">0</td>
+            <td class="text-left" rowspan="1" colspan="1">Existing TLS Certificate Compression</td>
             <td class="text-left" rowspan="1" colspan="1">1619</td>
             <td class="text-left" rowspan="1" colspan="1">3243</td>
             <td class="text-left" rowspan="1" colspan="1">3821</td>
           </tr>
           <tr>
-            <td class="text-left" rowspan="1" colspan="1">Intermediate Suppression and TLS Cert Compression</td>
-            <td class="text-left" rowspan="1" colspan="1">0</td>
-            <td class="text-left" rowspan="1" colspan="1">1020</td>
-            <td class="text-left" rowspan="1" colspan="1">1445</td>
-            <td class="text-left" rowspan="1" colspan="1">3303</td>
-          </tr>
-          <tr>
             <td class="text-left" rowspan="1" colspan="1">
               <strong>This Draft</strong>
 </td>
-            <td class="text-left" rowspan="1" colspan="1">65336</td>
-            <td class="text-left" rowspan="1" colspan="1">661</td>
-            <td class="text-left" rowspan="1" colspan="1">1060</td>
-            <td class="text-left" rowspan="1" colspan="1">1437</td>
-          </tr>
-          <tr>
-            <td class="text-left" rowspan="1" colspan="1">
-              <strong>This Draft with opaque trained dictionary</strong>
-</td>
-            <td class="text-left" rowspan="1" colspan="1">3000</td>
-            <td class="text-left" rowspan="1" colspan="1">562</td>
-            <td class="text-left" rowspan="1" colspan="1">931</td>
-            <td class="text-left" rowspan="1" colspan="1">1454</td>
+            <td class="text-left" rowspan="1" colspan="1">881</td>
+            <td class="text-left" rowspan="1" colspan="1">1256</td>
+            <td class="text-left" rowspan="1" colspan="1">1716</td>
           </tr>
           <tr>
             <td class="text-left" rowspan="1" colspan="1">Hypothetical Optimal Compression</td>
-            <td class="text-left" rowspan="1" colspan="1">0</td>
             <td class="text-left" rowspan="1" colspan="1">377</td>
             <td class="text-left" rowspan="1" colspan="1">742</td>
             <td class="text-left" rowspan="1" colspan="1">1075</td>
@@ -1547,13 +1496,7 @@ Concatenate the byte representation of each extension (including extension id an
           <p id="section-4-4.2.1">'TLS Cert Compression' used ZStandard with the parameters configured for maximum compression as defined in <span>[<a href="#TLSCertCompress" class="cite xref">TLSCertCompress</a>]</span>.<a href="#section-4-4.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-4-4.3">
-          <p id="section-4-4.3.1">'Intermediate Suppression and TLS Cert Compression' was modelled as the elimination of all certificates in the intermediate and root certificates with the Basic Constraints CA value set to true. If a cert chain included an unrecognized certificate with CA status, then no CA certificates were removed from that chain. The cert chain was then passed to 'TLS Cert Compression' as a second pass.<a href="#section-4-4.3.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-4-4.4">
-          <p id="section-4-4.4.1">'This Draft with opaque trained dictionary' refers to pass 1 and pass 2 as defined by this draft, but instead using a 3000 byte dictionary for pass 2 which was produced by the Zstandard dictionary training algorithm. This illustrates a ceiling on what ought to be possible by improving the construction of the pass 2 dictionary in this document. However, using this trained dictionary directly will not treat all CA's equitably, as the dictionary will be biased towards compressing the most popular CAs more effectively.<a href="#section-4-4.4.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-4-4.5">
-          <p id="section-4-4.5.1">'Hypothetical Optimal Compression' is the resulting size of the cert chain after reducing it to only the public key in the end-entity certificate, the CA signature over the EE cert, the embedded SCT signatures and a compressed list of domains in the SAN extension. This represents the best possible compression as it entirely removes any CA certs, identifiers, field tags and lengths and non-critical extensions such as OCSP, CRL and policy extensions.<a href="#section-4-4.5.1" class="pilcrow">¶</a></p>
+          <p id="section-4-4.3.1">'Hypothetical Optimal Compression' is the resulting size of the cert chain after reducing it to only the public key in the end-entity certificate, the CA signature over the EE cert, the embedded SCT signatures and a compressed list of domains in the SAN extension. This represents the best possible compression as it entirely removes any CA certs, identifiers, field tags and lengths and non-critical extensions such as OCSP, CRL and policy extensions.<a href="#section-4-4.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1571,7 +1514,6 @@ Concatenate the byte representation of each extension (including extension id an
 <p id="section-5.1-1">The scheme defined in this draft is deployed with the static dictionaries constructed from the parameters listed in <a href="#scheme" class="auto internal xref">Section 3</a> fixed to a particular TLS Certificate Compression code point.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <p id="section-5.1-2">As new CA certificates are added to the CCADB and deployed on the web, new versions of this draft would need to be issued with their own code point and dictionary parameters. However, the process of adding new root certificates to a root store is already a two to three year process and this scheme includes untrusted root certificates still undergoing the application process in its dictionary. As a result, it would be reasonable to expect a new version of this scheme with updated dictionaries to be issued at most once a year and more likely once every two or three years.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
 <p id="section-5.1-3">A more detailed analysis and discussion of CA certificate lifetimes and root store operations is included in <a href="#churn" class="auto internal xref">Appendix B</a>, as well as an alternative design which would allow for dictionary negotiation rather than fixing one dictionary per code point.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
-<p id="section-5.1-4">[[<strong>DISCUSS:</strong> Are there concerns over this approach? Would using at most one code point per year be acceptable? Currently 3 of the 16384 'Specification Required' IANA managed code points are in use.]]<a href="#section-5.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="version-migration">
@@ -1590,8 +1532,7 @@ Concatenate the byte representation of each extension (including extension id an
 <a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-disk-space-requirements" class="section-name selfRef">Disk Space Requirements</a>
         </h3>
 <p id="section-5.3-1">Clients and servers implementing this scheme need to store a listing of root and intermediate certificates for pass 1, which currently occupies around ~3 MB and a smaller dictionary on the order of ~100 KB for pass 2. Clients and servers offering multiple versions of this scheme do not need to duplicate the pass 1 listing, as multiple versions can refer to same string.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
-<p id="section-5.3-2">As popular web browsers already ship a complete list of trusted intermediate and root certificates, their additional storage requirements are minimal. Servers offering this scheme are intended to be 'full-fat' web servers and so typically have plentiful storage already. This draft is not intended for use in storage-constrained IoT devices, but alternative versions with stripped down listings may be suitable.<a href="#section-5.3-2" class="pilcrow">¶</a></p>
-<p id="section-5.3-3">[[<strong>DISCUSS:</strong> The current draft priorities an equitable treatment for every recognized and applicant CA over minimizing storage requirements. The required disk space could be significantly reduced by only including CAs which meet a particular popularity threshold via CT log sampling.]]<a href="#section-5.3-3" class="pilcrow">¶</a></p>
+<p id="section-5.3-2">As popular web browsers already ship a complete list of trusted intermediate and root certificates, their additional storage requirements are minimal. Servers offering this scheme for their own certificate chain do not need to store the list of pass 1 root and intermediate certificates at all. Instead, they can store the hash of each certificate in the dictionary and its associated identifier, which reduces their storage footprint to ~60 KB. It is also permissible for servers only performing compression to only store a subset of the full pass 1 dictionary, as it is not an error for a server to choose not to compress a particular entry.<a href="#section-5.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="implementation-complexity">
@@ -1599,7 +1540,7 @@ Concatenate the byte representation of each extension (including extension id an
         <h3 id="name-implementation-complexity">
 <a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-implementation-complexity" class="section-name selfRef">Implementation Complexity</a>
         </h3>
-<p id="section-5.4-1">Although much of this draft is dedicated to the construction of the certificate list and dictionary used in the scheme, implementations are indifferent to these details. Pass 1 can be implemented as a simple string substitution and pass 2 with a single call to permissively licensed and widely distributed Zstandard implementations such as <span>[<a href="#ZstdImpl" class="cite xref">ZstdImpl</a>]</span>. Future versions of this draft which vary the dictionary construction then only require changes to the static data shipped with these implementations and the use of a new code point.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
+<p id="section-5.4-1">Although much of this draft is dedicated to the construction of the certificate list and dictionary used in the scheme, implementations are indifferent to these details. Pass 1 can be implemented as a simple string substitution and pass 2 with already widely deployed functionality for Brotli Certificate Compression. Future versions of this draft which vary the dictionary construction then only require changes to the static data shipped with these implementations and the use of a new code point.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
 <p id="section-5.4-2">There are several options for handling the distribution of the associated static data. One option is to distribute it directly with the TLS library and update it as part of that library's regular release cycle. Whilst this is easy for statically linked libraries written in languages which offer first-class package management and compile time feature selection (e.g. Go, Rust), it is trickier for dynamically linked libraries who are unlikely to want to incur the increased distribution size. In these ecosystems it may make sense to distribute the dictionaries are part of an independent package managed by the OS which can be discovered by the library at run-time. Another promising alternative would be to have existing automated certificate tooling provision the library with both the full certificate chain and multiple precompressed chains during the certificate issuance / renewal process.<a href="#section-5.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1637,7 +1578,7 @@ Concatenate the byte representation of each extension (including extension id an
       <h2 id="name-iana-considerations">
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-8-1">[[<strong>TODO:</strong> Adopt an identifier for experimental purposes.]]<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-1">This draft uses the TLS Certificate Compression Algorithm ID 43776 (0xab00) which is available under the Experimental Use policy and does not require any IANA actions.<a href="#section-8-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-combined-references">
@@ -1655,6 +1596,10 @@ Concatenate the byte representation of each extension (including extension id an
         <dd>
 <span class="refAuthor">Apple</span>, <span class="refTitle">"Certificate Transparency Logs trusted by Apple"</span>, <time datetime="2023-06-05" class="refDate">5 June 2023</time>, <span>&lt;<a href="https://valid.apple.com/ct/log_list/current_log_list.json">https://valid.apple.com/ct/log_list/current_log_list.json</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="BROTLI">[BROTLI]</dt>
+        <dd>
+<span class="refAuthor">Alakuijala, J.</span> and <span class="refAuthor">Z. Szabadka</span>, <span class="refTitle">"Brotli Compressed Data Format"</span>, <span class="seriesInfo">RFC 7932</span>, <span class="seriesInfo">DOI 10.17487/RFC7932</span>, <time datetime="2016-07" class="refDate">July 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7932">https://www.rfc-editor.org/rfc/rfc7932</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="CCADBAllCerts">[CCADBAllCerts]</dt>
         <dd>
 <span class="refAuthor">Mozilla</span>, <span class="refAuthor">Microsoft</span>, <span class="refAuthor">Google</span>, <span class="refAuthor">Apple</span>, and <span class="refAuthor">Cisco</span>, <span class="refTitle">"CCADB Certificates Listing"</span>, <time datetime="2023-06-05" class="refDate">5 June 2023</time>, <span>&lt;<a href="https://ccadb.my.salesforce-sites.com/ccadb/AllCertificateRecordsCSVFormat">https://ccadb.my.salesforce-sites.com/ccadb/AllCertificateRecordsCSVFormat</a>&gt;</span>. </dd>
@@ -1671,10 +1616,6 @@ Concatenate the byte representation of each extension (including extension id an
         <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="RFC5280">[RFC5280]</dt>
-        <dd>
-<span class="refAuthor">Cooper, D.</span>, <span class="refAuthor">Santesson, S.</span>, <span class="refAuthor">Farrell, S.</span>, <span class="refAuthor">Boeyen, S.</span>, <span class="refAuthor">Housley, R.</span>, and <span class="refAuthor">W. Polk</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile"</span>, <span class="seriesInfo">RFC 5280</span>, <span class="seriesInfo">DOI 10.17487/RFC5280</span>, <time datetime="2008-05" class="refDate">May 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5280">https://www.rfc-editor.org/rfc/rfc5280</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
         <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
@@ -1684,12 +1625,8 @@ Concatenate the byte representation of each extension (including extension id an
 <span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8446">https://www.rfc-editor.org/rfc/rfc8446</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="TLSCertCompress">[TLSCertCompress]</dt>
-        <dd>
-<span class="refAuthor">Ghedini, A.</span> and <span class="refAuthor">V. Vasiliev</span>, <span class="refTitle">"TLS Certificate Compression"</span>, <span class="seriesInfo">RFC 8879</span>, <span class="seriesInfo">DOI 10.17487/RFC8879</span>, <time datetime="2020-12" class="refDate">December 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8879">https://www.rfc-editor.org/rfc/rfc8879</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="ZSTD">[ZSTD]</dt>
       <dd>
-<span class="refAuthor">Collet, Y.</span> and <span class="refAuthor">M. Kucherawy, Ed.</span>, <span class="refTitle">"Zstandard Compression and the 'application/zstd' Media Type"</span>, <span class="seriesInfo">RFC 8878</span>, <span class="seriesInfo">DOI 10.17487/RFC8878</span>, <time datetime="2021-02" class="refDate">February 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8878">https://www.rfc-editor.org/rfc/rfc8878</a>&gt;</span>. </dd>
+<span class="refAuthor">Ghedini, A.</span> and <span class="refAuthor">V. Vasiliev</span>, <span class="refTitle">"TLS Certificate Compression"</span>, <span class="seriesInfo">RFC 8879</span>, <span class="seriesInfo">DOI 10.17487/RFC8879</span>, <time datetime="2020-12" class="refDate">December 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8879">https://www.rfc-editor.org/rfc/rfc8879</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -1730,7 +1667,7 @@ Concatenate the byte representation of each extension (including extension id an
 <dd class="break"></dd>
 <dt id="QUICStudy">[QUICStudy]</dt>
         <dd>
-<span class="refAuthor">Nawrocki, M.</span>, <span class="refAuthor">Tehrani, P.</span>, <span class="refAuthor">Hiesgen, R.</span>, <span class="refAuthor">Mücke, J.</span>, <span class="refAuthor">Schmidt, T.</span>, and <span class="refAuthor">M. Wählisch</span>, <span class="refTitle">"On the interplay between TLS certificates and QUIC performance"</span>, <span class="refContent">ACM</span>, <span class="seriesInfo">Proceedings of the 18th International Conference on emerging Networking EXperiments and Technologies</span>, <span class="seriesInfo">DOI 10.1145/3555050.3569123</span>, <time datetime="2022-11" class="refDate">November 2022</time>, <span>&lt;<a href="https://doi.org/10.1145/3555050.3569123">https://doi.org/10.1145/3555050.3569123</a>&gt;</span>. </dd>
+<span class="refAuthor">Nawrocki, M.</span>, <span class="refAuthor">Tehrani, P.</span>, <span class="refAuthor">Hiesgen, R.</span>, <span class="refAuthor">Mücke, J.</span>, <span class="refAuthor">Schmidt, T.</span>, and <span class="refAuthor">M. Wählisch</span>, <span class="refTitle">"On the interplay between TLS certificates and QUIC performance"</span>, <span class="refContent">ACM</span>, <span class="seriesInfo">Proceedings of the 18th International Conference on emerging Networking EXperiments and Technologies pp. 204-213</span>, <span class="seriesInfo">DOI 10.1145/3555050.3569123</span>, <time datetime="2022-11" class="refDate">November 2022</time>, <span>&lt;<a href="https://doi.org/10.1145/3555050.3569123">https://doi.org/10.1145/3555050.3569123</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7924">[RFC7924]</dt>
         <dd>
@@ -1749,12 +1686,8 @@ Concatenate the byte representation of each extension (including extension id an
 <span class="refAuthor">Kampanakis, P.</span>, <span class="refAuthor">Bytheway, C.</span>, <span class="refAuthor">Westerbaan, B.</span>, and <span class="refAuthor">M. Thomson</span>, <span class="refTitle">"Suppressing CA Certificates in TLS 1.3"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-kampanakis-tls-scas-latest-03</span>, <time datetime="2023-01-05" class="refDate">5 January 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-kampanakis-tls-scas-latest-03">https://datatracker.ietf.org/doc/html/draft-kampanakis-tls-scas-latest-03</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="SCAStudy">[SCAStudy]</dt>
-        <dd>
-<span class="refAuthor">Kampanakis, P.</span> and <span class="refAuthor">M. Kallitsis</span>, <span class="refTitle">"Faster Post-Quantum TLS Handshakes Without Intermediate CA Certificates"</span>, <span class="refContent">Springer International Publishing</span>, <span class="seriesInfo">Lecture Notes in Computer Science pp. 337-355</span>, <span class="seriesInfo">DOI 10.1007/978-3-031-07689-3_25</span>, <span class="seriesInfo">ISBN ["9783031076886", "9783031076893"]</span>, <time datetime="2022" class="refDate">2022</time>, <span>&lt;<a href="https://doi.org/10.1007/978-3-031-07689-3_25">https://doi.org/10.1007/978-3-031-07689-3_25</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="ZstdImpl">[ZstdImpl]</dt>
       <dd>
-<span class="refAuthor">Facebook</span>, <span class="refTitle">"ZStandard (Zstd)"</span>, <time datetime="2023-06-05" class="refDate">5 June 2023</time>, <span>&lt;<a href="https://github.com/facebook/zstd">https://github.com/facebook/zstd</a>&gt;</span>. </dd>
+<span class="refAuthor">Kampanakis, P.</span> and <span class="refAuthor">M. Kallitsis</span>, <span class="refTitle">"Faster Post-Quantum TLS Handshakes Without Intermediate CA Certificates"</span>, <span class="refContent">Springer International Publishing</span>, <span class="seriesInfo">Lecture Notes in Computer Science pp. 337-355</span>, <span class="seriesInfo">DOI 10.1007/978-3-031-07689-3_25</span>, <span class="seriesInfo">ISBN ["9783031076886", "9783031076893"]</span>, <time datetime="2022" class="refDate">2022</time>, <span>&lt;<a href="https://doi.org/10.1007/978-3-031-07689-3_25">https://doi.org/10.1007/978-3-031-07689-3_25</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -1766,7 +1699,7 @@ Concatenate the byte representation of each extension (including extension id an
       <h2 id="name-acknowledgments">
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="appendix-A-1">The authors thank Bas Westerbaan, Martin Thomson and Kathleen Wilson for feedback on early versions of this document.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">The authors thank Bas Westerbaan, Peter Wu, Panos Kampanakis, Ilari Liusvaara, Martin Thomson and Kathleen Wilson for feedback and helpful discussions on this document.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="churn">
@@ -1789,7 +1722,7 @@ Concatenate the byte representation of each extension (including extension id an
 <a href="#appendix-B.2" class="section-number selfRef">B.2. </a><a href="#name-dictionary-negotiation" class="section-name selfRef">Dictionary Negotiation</a>
         </h3>
 <p id="appendix-B.2-1">This draft is currently written with a view to being adopted as a particular TLS Certificate Compression Scheme. However, this means that each dictionary used in the wild must have an assigned code point. A new dictionary would likely need to be issued no more than yearly. However, negotiating the dictionary used would avoid the overhead of minting a new draft and code point. A sketch for how dictionary negotiation might work is below.<a href="#appendix-B.2-1" class="pilcrow">¶</a></p>
-<p id="appendix-B.2-2">This draft would instead define a new extension, which would define TLS Certificate Compression with ZStandard Dictionaries. Dictionaries would be identified by an IANA-assigned identifier of two bytes, with a further two bytes for the major version and two more for the minor version. Adding new certificates to a dictionary listing would require a minor version bump. Removing certificates or changing the pass 2 dictionary would require a major version bump.<a href="#appendix-B.2-2" class="pilcrow">¶</a></p>
+<p id="appendix-B.2-2">This draft would instead define a new extension, which would define TLS Certificate Compression with Preshared Dictionaries. Dictionaries would be identified by an IANA-assigned identifier of two bytes, with a further two bytes for the major version and two more for the minor version. Adding new certificates to a dictionary listing would require a minor version bump. Removing certificates or changing the pass 2 dictionary would require a major version bump.<a href="#appendix-B.2-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="appendix-B.2-3">
 <pre>
 struct {
@@ -1797,10 +1730,6 @@ struct {
   uint16 major_version;
   uint16 minor_version;
 } DictionaryId
-
-struct {
-  DictionaryId supported_dictionaries&lt;6..2^16-1&gt;
-} ZStdSharedDictXtn
 </pre><a href="#appendix-B.2-3" class="pilcrow">¶</a>
 </div>
 <p id="appendix-B.2-4">The client lists their known dictionaries in an extension in the ClientHello. The client need only retain and advertise the highest known minor version for any major version of a dictionary they are willing to offer. The server may select any dictionary it has a copy of with matching identifier, matching major version number and a minor version number not greater than the client's minor version number.<a href="#appendix-B.2-4" class="pilcrow">¶</a></p>
