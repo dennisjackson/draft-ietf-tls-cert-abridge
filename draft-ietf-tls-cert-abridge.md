@@ -296,7 +296,7 @@ This draft uses the TLS Certificate Compression Algorithm ID 43776 (0xab00) whic
 
 # Acknowledgments
 
-The authors thank Bas Westerbaan, Martin Thomson and Kathleen Wilson for feedback on early versions of this document.
+The authors thank Bas Westerbaan, Peter Wu, Panos Kampanakis, Ilari Liusvaara, Martin Thomson and Kathleen Wilson for feedback and helpful discussions on this document.
 
 # CCADB Churn and Dictionary Negotiation {#churn}
 
