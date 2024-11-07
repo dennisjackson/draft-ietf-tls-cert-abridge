@@ -28,7 +28,7 @@ author:
 
 normative:
  TLSCertCompress: RFC8879
- ZSTD: RFC8878
+ BROTLI: RFC7932
  TLS13: RFC8446
  DATES: RFC3339
 
@@ -108,14 +108,6 @@ informative:
     -
       org: "Cisco"
 
- ZstdImpl:
-   title: ZStandard (Zstd)
-   target: https://github.com/facebook/zstd
-   date: 2023-06-05
-   author:
-    -
-      org: "Facebook"
-
  FingerprintingPost:
    title: "The state of TLS fingerprinting What’s Working, What Isn’t, and What’s Next"
    target: https://www.fastly.com/blog/the-state-of-tls-fingerprinting-whats-working-what-isnt-and-whats-next
@@ -177,10 +169,9 @@ This draft refers to dates in Internet Date/Time Format as specified in {{Sectio
 
 This section describes a compression scheme suitable for compressing certificate chains used in TLS. The scheme is defined in two parts. An initial pass compressing known intermediate and root certificates and then a subsequent pass compressing the end-entity certificate.
 
-The compression scheme in this draft has two parameters listed below which influence the construction of the static dictionary. Future versions of this draft would use different parameters and so construct different dictionaries which would be registered under different TLS Certificate Compression code points. This is discussed further in {{deployment}}.
+The compression scheme in this draft has one parameter listed below which influence the construction of the static dictionary. Future versions of this draft would use different parameters and so construct different dictionaries which would be registered under different TLS Certificate Compression code points. This is discussed further in {{deployment}}.
 
 * `CCADB_SNAPSHOT_TIME` - `2023-01-01 00:00:00Z`
-* `CT_CERT_WINDOW` - `2022-12-01 00:00:00Z` to `2023-01-01 00:00:00Z`
 
 ## Pass 1: Intermediate and Root Compression
 
@@ -231,46 +222,12 @@ TLS implementations intending to only use this scheme as a compressor (e.g. serv
 
 ## Pass 2: End-Entity Compression
 
-This section describes a pass based on Zstandard {{ZSTD}} with application-specified dictionaries. The dictionary is constructed with reference to the list of intermediate and root certificates discussed earlier in {{listing}}, as well as several external sources of information.
+The second pass uses Brotli {{BROTLI}} to compress any redundant data in the end-entity certificate. Benchmarks on existing certificate chains suggest that the compression ratio is relatively insensitive to the compressor's parameters.  It is RECOMMENDED that the compressor (i.e. the server) use the following parameters:
 
-[[**DISCUSS:** This draft is unopinionated about the underlying compression scheme is used as long as it supports application specified dictionaries. Is there an argument for using a different scheme?]]
+ * `quality=5`
+ * `lgwindow=17`
 
-### Construction of Shared Dictionary
-
-[[**DISCUSS / TODO:** This section remains a work in progress and needs refinement. The goal is to produce a dictionary of minimal size which provides maximum compression whilst treating every CA equitably. Currently this dictionary occupies ~65KB of space, is equitable and has performance within a ~100 bytes of the best known alternative. This is discussed further in {{eval}}.]]
-
-The dictionary is built by systematic combination of the common strings used in certificates by each issuer in the known list described in {{listing}}. This dictionary is constructed in three stages, with the output of each stage being concatenated with the next. Implementations of this scheme need only consume the finished dictionary and do not need to construct it themselves.
-
-* Firstly, for each intermediate certificate enumerated in the listing in {{listing}}., extract the issuer field ({{Section 4.1.2.4 of !RFC5280}}) and derive the matching authority key identifier ({{Section 4.2.1.1 of RFC5280}}) for the certificate. Order them according to the listing in {{listing}}, then copy them to the output.
-
-* Secondly, take the listing of certificate transparency logs trusted by the root programs selected in {{listing}}, which are located at{{AppleCTLogs}} {{GoogleCTLogs}} as of `CCADB_SNAPSHOT_TIME` and extract the list of log identifiers. Remove duplicates and order them lexicographically, then copy them to the output.
-
-* Finally, enumerate all certificates contained within certificate transparency logs above and witnessed during `CT_CERT_WINDOW`. For each issuer in the listing in {{listing}}, select the first end-entity certificate when ordered by the log id (lexicographically) and latest witnessed date.
-
-  Extract the contents of the following extensions from the end-entity certificate selected for each issuer:
-
-  * Authority Information Access ({{Section 4.2.2.1 of RFC5280}})
-  * Certificate Policies  ({{Section 4.2.1.4 of RFC5280}})
-  * CRL Distribution Points ({{Section 4.2.1.13 of RFC5280}})
-  * Freshest CRL ({{Section 4.2.1.15 of RFC5280}})
-
-  Concatenate the byte representation of each extension (including extension id and length) and copy it to the output. If no end-entity certificate can be found for an issuer with this process, omit the entry for that issuer.
-
-[[**DISCUSS:** This last step is picking a single certificate issued by each issuer as a canonical reference to use for compression. The ordering chosen allows the dictionary builder to stop traversing CT as soon as they've found an entry for each issuer. It would be much more efficient to just ask CAs to submit this information to the CCADB directly.]]
-
-#### Compression of End-Entity Certificates in Certificate Chain
-
-The resulting bytes from Pass 1 are passed to ZStandard {{ZSTD}} with the dictionary specified in the previous section. It is RECOMMENDED that the compressor (i.e. the server) use the following parameters:
-
- * `chain_log=30`
- * `search_log=30`
- * `hash_log=30`
- * `target_length=6000`
- * `threads=1`
- * `compression_level=22`
- * `force_max_window=1`
-
-These parameters are recommended in order to achieve the best compression ratio however implementations MAY use their preferred parameters as long as the resulting output can be decompressed by a {{ZSTD}}-compliant implementation. With TLS Certificate Compression, the server needs to only perform a single compression at startup and cache the result, so optimizing for maximal compression is recommended. The client's decompression speed is insensitive to these parameters.
+Benchmarks on real world certificate chains suggest that in this context higher values require greater CPU usage but do not result in better compression,
 
 # Preliminary Evaluation {#eval}
 
@@ -307,7 +264,7 @@ A more detailed analysis and discussion of CA certificate lifetimes and root sto
 
 ## Version Migration
 
-As new versions of this scheme are specified, clients and servers would benefit from migrating to the latest version. Whilst servers using CA certificates outside the scheme's listing can still offer this compression scheme and partially benefit from it, migrating to the latest version ensures that new CAs can compete on a level playing field with existing CAs. It is possible for a client or server to offer multiple versions of this scheme without having to pay twice the storage cost, since the majority of the stored data is in the pass 1 certificate listing and the majority of certificates will be in both versions and so need only be stored once.
+As new versions of this scheme are specified, clients and servers would benefit from migrating to the latest version. Whilst servers using CA certificates outside the scheme's listing can still offer this compression scheme and partially benefit from it, migrating to the latest version ensures that new CAs can compete on a level playing field with existing CAs. It is possible for a client or server to offer multiple versions of this scheme without having to pay twice the storage cost, since most certificates will be in both versions and so need only be stored once.
 
 Clients and servers SHOULD offer the latest version of this scheme and MAY offer one or more historical versions. Although clients and servers which fall out of date will no longer benefit from the scheme, they will not suffer any other penalties or incompatibilities. Future schemes will likely establish recommended lifetimes for sunsetting a previous version and adopting a new one.
 
@@ -315,7 +272,7 @@ As the majority of clients deploying this scheme are likely to be web browsers w
 
 ## Disk Space Requirements
 
-Clients and servers implementing this scheme need to store a listing of root and intermediate certificates for pass 1, which currently occupies around ~3 MB and a smaller dictionary on the order of ~100 KB for pass 2. Clients and servers offering multiple versions of this scheme do not need to duplicate the pass 1 listing, as multiple versions can refer to same string.
+Clients and servers implementing this scheme need to store a listing of root and intermediate certificates for pass 1 which currently occupies around ~3 MB. Clients and servers offering multiple versions of this scheme do not need to duplicate the pass 1 listing, as multiple versions can refer to same string.
 
 As popular web browsers already ship a complete list of trusted intermediate and root certificates, their additional storage requirements are minimal. Servers offering this scheme are intended to be 'full-fat' web servers and so typically have plentiful storage already. This draft is not intended for use in storage-constrained IoT devices, but alternative versions with stripped down listings may be suitable.
 
@@ -323,7 +280,7 @@ As popular web browsers already ship a complete list of trusted intermediate and
 
 ## Implementation Complexity
 
-Although much of this draft is dedicated to the construction of the certificate list and dictionary used in the scheme, implementations are indifferent to these details. Pass 1 can be implemented as a simple string substitution and pass 2 with a single call to permissively licensed and widely distributed Zstandard implementations such as {{ZstdImpl}}. Future versions of this draft which vary the dictionary construction then only require changes to the static data shipped with these implementations and the use of a new code point.
+Although much of this draft is dedicated to the construction of the certificate list and dictionary used in the scheme, implementations are indifferent to these details. Pass 1 can be implemented as a simple string substitution and pass 2 with already widely deployed functionality for Brotli Certificate Compression. Future versions of this draft which vary the dictionary construction then only require changes to the static data shipped with these implementations and the use of a new code point.
 
 There are several options for handling the distribution of the associated static data. One option is to distribute it directly with the TLS library and update it as part of that library's regular release cycle. Whilst this is easy for statically linked libraries written in languages which offer first-class package management and compile time feature selection (e.g. Go, Rust), it is trickier for dynamically linked libraries who are unlikely to want to incur the increased distribution size. In these ecosystems it may make sense to distribute the dictionaries are part of an independent package managed by the OS which can be discovered by the library at run-time. Another promising alternative would be to have existing automated certificate tooling provision the library with both the full certificate chain and multiple precompressed chains during the certificate issuance / renewal process.
 
@@ -366,7 +323,7 @@ Typically around 100 to 200 new WebPKI intermediate certificates are issued each
 
 This draft is currently written with a view to being adopted as a particular TLS Certificate Compression Scheme. However, this means that each dictionary used in the wild must have an assigned code point. A new dictionary would likely need to be issued no more than yearly. However, negotiating the dictionary used would avoid the overhead of minting a new draft and code point. A sketch for how dictionary negotiation might work is below.
 
-This draft would instead define a new extension, which would define TLS Certificate Compression with ZStandard Dictionaries. Dictionaries would be identified by an IANA-assigned identifier of two bytes, with a further two bytes for the major version and two more for the minor version. Adding new certificates to a dictionary listing would require a minor version bump. Removing certificates or changing the pass 2 dictionary would require a major version bump.
+This draft would instead define a new extension, which would define TLS Certificate Compression with Preshared Dictionaries. Dictionaries would be identified by an IANA-assigned identifier of two bytes, with a further two bytes for the major version and two more for the minor version. Adding new certificates to a dictionary listing would require a minor version bump. Removing certificates would require a major version bump.
 
 ~~~
 struct {
@@ -374,10 +331,6 @@ struct {
   uint16 major_version;
   uint16 minor_version;
 } DictionaryId
-
-struct {
-  DictionaryId supported_dictionaries<6..2^16-1>
-} ZStdSharedDictXtn
 ~~~
 
 The client lists their known dictionaries in an extension in the ClientHello. The client need only retain and advertise the highest known minor version for any major version of a dictionary they are willing to offer. The server may select any dictionary it has a copy of with matching identifier, matching major version number and a minor version number not greater than the client's minor version number.

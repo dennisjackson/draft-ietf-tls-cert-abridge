@@ -132,17 +132,21 @@ class MetadataEstimate:
         return 0
 
     def compress(self, cert_chain):
-
         (d, pk, s) = extract_subject_info(cert_chain[0])
         compressed_domains = zstandard.compress(d, 22)
         # Size Estimate := Certificate - pk - sig with compressed_domains and no SCTs.
-        size_estimate = len(cert_chain[0]) - len(d) - len(pk) - len(s) + len(compressed_domains)
-        size_estimate -= sum([len(x.signature) + len(x.log_id) for x in extract_scts(cert_chain[0])])
+        size_estimate = (
+            len(cert_chain[0]) - len(d) - len(pk) - len(s) + len(compressed_domains)
+        )
+        size_estimate -= sum(
+            [len(x.signature) + len(x.log_id) for x in extract_scts(cert_chain[0])]
+        )
         return b"x" * size_estimate
 
     def decompress(self, compressed_data):
         # Not defined.
         pass
+
 
 class LeafDomainNames:
     def __init__(self):
