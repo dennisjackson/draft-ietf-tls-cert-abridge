@@ -155,10 +155,6 @@ TLS Cached Information Extension {{?RFC7924}} introduced a new extension allowin
 
 Handling long certificate chains in TLS-Based EAP Methods {{?RFC9191}} discusses the challenges of long certificate chains outside the WebPKI ecosystem. Although the scheme proposed in this draft is targeted at WebPKI use, defining alternative shared dictionaries for other major ecosystems may be of interest.
 
-## Status
-
-This draft is still at an early stage. Open questions are marked with the tag **DISCUSS**.
-
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
@@ -195,8 +191,6 @@ The algorithm for enumerating the list of compressible intermediate and root cer
 6. Remove any certificates which are duplicates (have the same SHA256 certificate fingerprint)
 7. Order the list of certificates by the timestamp for when each was added to the CCADB, breaking any ties with the lexicographic ordering of the SHA256 certificate fingerprint.
 8. Associate each element of the list with the concatenation of the constant `0xff` and its index in the list represented as a `uint16`.
-
-[[**DISCUSS:** The four programs were selected because they represent certificate consumers in the CCADB. Are there any other root programs which ought to be included? The only drawback is a larger disk requirement, since this compression scheme does not impact trust decisions.]]
 
 [[**TODO:** Ask CCADB to provide an authoritative copy of this listing. A subset of these lists is available in `benchmarks/data` in this draft's repository.]]
 
@@ -261,8 +255,6 @@ As new CA certificates are added to the CCADB and deployed on the web, new versi
 
 A more detailed analysis and discussion of CA certificate lifetimes and root store operations is included in {{churn}}, as well as an alternative design which would allow for dictionary negotiation rather than fixing one dictionary per code point.
 
-[[**DISCUSS:** Are there concerns over this approach? Would using at most one code point per year be acceptable? Currently 3 of the 16384 'Specification Required' IANA managed code points are in use.]]
-
 ## Version Migration
 
 As new versions of this scheme are specified, clients and servers would benefit from migrating to the latest version. Whilst servers using CA certificates outside the scheme's listing can still offer this compression scheme and partially benefit from it, migrating to the latest version ensures that new CAs can compete on a level playing field with existing CAs. It is possible for a client or server to offer multiple versions of this scheme without having to pay twice the storage cost, since the majority of the stored data is in the pass 1 certificate listing and the majority of certificates will be in both versions and so need only be stored once.
@@ -276,8 +268,6 @@ As the majority of clients deploying this scheme are likely to be web browsers w
 Clients and servers implementing this scheme need to store a listing of root and intermediate certificates for pass 1, which currently occupies around ~3 MB and a smaller dictionary on the order of ~100 KB for pass 2. Clients and servers offering multiple versions of this scheme do not need to duplicate the pass 1 listing, as multiple versions can refer to same string.
 
 As popular web browsers already ship a complete list of trusted intermediate and root certificates, their additional storage requirements are minimal. Servers offering this scheme are intended to be 'full-fat' web servers and so typically have plentiful storage already. This draft is not intended for use in storage-constrained IoT devices, but alternative versions with stripped down listings may be suitable.
-
-[[**DISCUSS:** The current draft priorities an equitable treatment for every recognized and applicant CA over minimizing storage requirements. The required disk space could be significantly reduced by only including CAs which meet a particular popularity threshold via CT log sampling.]]
 
 ## Implementation Complexity
 
