@@ -224,13 +224,10 @@ TLS implementations intending to only use this scheme as a compressor (e.g. serv
 
 The second pass uses Brotli {{BROTLI}} to compress any redundant data in the end-entity certificate. Benchmarks on existing certificate chains suggest that the compression ratio is relatively insensitive to the compressor's parameters.  It is RECOMMENDED that the compressor (i.e. the server) use the following parameters:
 
- * `chain_log=30`
- * `search_log=30`
- * `hash_log=30`
- * `target_length=6000`
- * `threads=1`
- * `compression_level=22`
- * `force_max_window=1`
+ * `quality=5`
+ * `lgwindow=17`
+
+Benchmarks on real world certificate chains suggest that in this context higher values require greater CPU usage but do not result in better compression,
 
 # Preliminary Evaluation {#eval}
 
