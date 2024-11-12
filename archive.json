@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-11-10T00:47:32.808275+00:00",
+  "timestamp": "2024-11-12T00:43:21.867807+00:00",
   "repo": "tlswg/draft-ietf-tls-cert-abridge",
   "labels": [
     {
@@ -260,9 +260,17 @@
       "labels": [],
       "body": "@thomwiggers: \r\n\r\n> The one thing that makes me frown a bit is the intended versioning scheme. I don't think consuming identifiers is a problem, but perhaps we can pre-define the code points and variables for the next, say, N=0xff years? Then the versioning mechanism is set for the foreseeable future. (You could even say that we wrap the code points after N years).\r\n\r\nAs well as the discussion on the mailing list, this was also discussed during the tlswg meeting @ IETF 117. There was no particular consensus on the most suitable strategy. \r\n\r\nA related issue is whether this draft will slow rotation of intermediate certificates. As discussed in Appendix B and at the IETF 117 Presentation, this might mean using an extension and dynamic negotiation is more suitable. ",
       "createdAt": "2024-02-26T12:27:55Z",
-      "updatedAt": "2024-03-01T12:48:18Z",
+      "updatedAt": "2024-11-10T16:12:21Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "ilaril",
+          "authorAssociation": "NONE",
+          "body": "As a note, one dynamic negotiation strategy I came up with:\r\n\r\n* Assign the identifiers backwards from 0xffffff (no real certificate is anywhere even near 16MB).\r\n* Removed certificates are replaced by tombstones.\r\n* Client sends size (including placeholders and tombstones) of its certificate dictionary to server in extension.\r\n* Server includes any certificates where the identifier is out of range for the client in full.\r\n\r\nThis seems like it could move as fast as stable sequencing of new certificates can be done. Both new and expired/removed certificate bunches in WebPKI seem to happen a bit more often than once per week on average.\r\n",
+          "createdAt": "2024-11-10T16:12:21Z",
+          "updatedAt": "2024-11-10T16:12:21Z"
+        }
+      ]
     },
     {
       "number": 17,
